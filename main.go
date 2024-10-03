@@ -17,9 +17,10 @@ import (
 
 func main() {
 	tuiMode := flag.Bool("tui", false, "use terminal ui")
+	configDir := flag.String("config", "", "configuration file dir")
 	flag.Parse()
 
-	cfg, err := config.LoadConfig()
+	cfg, err := config.LoadConfig(*configDir)
 	if err != nil {
 		log.Fatal(err)
 	}

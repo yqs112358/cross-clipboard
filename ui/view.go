@@ -83,7 +83,7 @@ func (v *View) Stop() {
 func (v *View) restart() {
 	v.Stop()
 
-	cfg, err := config.LoadConfig()
+	cfg, err := config.LoadConfig(v.CrossClipboard.Config.ConfigDirPath)
 	if err != nil {
 		log.Fatal(err)
 	}

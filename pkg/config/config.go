@@ -38,7 +38,7 @@ type Config struct {
 	PGPPrivateKeyArmored string            `mapstructure:"private_key"` // armor pgp private key
 	AutoTrust            bool              `mapstructure:"auto_trust"`  // auto trust device
 
-	ConfigDirPath string `mapstructure:"config_dir_path"` // config directory path
+	ConfigDirPath string // config directory path
 }
 
 // Save save config to file
@@ -75,19 +75,21 @@ func (c *Config) ResetToDefault() error {
 	return nil
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig(configDir string) (*Config, error) {
 	thisUser, err := user.Current()
 	if err != nil {
 		return nil, xerror.NewFatalError("error to get user").Wrap(err)
 	}
 
-	dotPath := stringutil.JoinURL(thisUser.HomeDir, configDirName)
+	if configDir == "" {
+		configDir = stringutil.JoinURL(thisUser.HomeDir, configDirName)
+	}
 	// make directory if not exists
-	os.MkdirAll(dotPath, 0777)
+	os.MkdirAll(configDir, 0777)
 
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(dotPath)
+	viper.AddConfigPath(configDir)
 
 	viper.SetDefault("group_name", "default")
 	viper.SetDefault("listen_host", "0.0.0.0")
@@ -97,8 +99,6 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("max_history", 10)
 
 	viper.SetDefault("hidden_text", true)
-
-	viper.SetDefault("config_dir_path", dotPath)
 
 	idPem, err := crypto.GenerateIDPem()
 	if err != nil {
@@ -132,8 +132,9 @@ func LoadConfig() (*Config, error) {
 		return nil, xerror.NewFatalError("failed to viper.WriteConfig").Wrap(err)
 	}
 
-	// set home username
+	// set vars
 	cfg.Username = thisUser.Username
+	cfg.ConfigDirPath = configDir
 
 	// unmarshal id
 	idPK, err := crypto.UnmarshalIDPrivateKey(cfg.IDPem)

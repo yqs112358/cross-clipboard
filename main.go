@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/yqs112358/cross-clipboard/ui"
 	"log"
 	"os"
 	"os/signal"
@@ -12,11 +13,10 @@ import (
 	"github.com/yqs112358/cross-clipboard/pkg/crossclipboard"
 	"github.com/yqs112358/cross-clipboard/pkg/device"
 	"github.com/yqs112358/cross-clipboard/pkg/xerror"
-	"github.com/yqs112358/cross-clipboard/ui"
 )
 
 func main() {
-	isTerminalMode := flag.Bool("t", false, "run in terminal mode")
+	tuiMode := flag.Bool("tui", false, "use terminal ui")
 	flag.Parse()
 
 	cfg, err := config.LoadConfig()
@@ -29,7 +29,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if isTerminalMode != nil && *isTerminalMode {
+	if tuiMode != nil && *tuiMode {
+		// TUI mode
+		view := ui.NewView(crossClipboard)
+		view.Start()
+	} else {
+		// Terminal mode
 		exitSignal := make(chan os.Signal, 1)
 		signal.Notify(exitSignal, os.Interrupt)
 
@@ -71,8 +76,5 @@ func main() {
 				os.Exit(0)
 			}
 		}
-	} else {
-		view := ui.NewView(crossClipboard)
-		view.Start()
 	}
 }

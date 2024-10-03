@@ -26,9 +26,6 @@ type Config struct {
 	MaxSize    int `mapstructure:"max_size"`    // limit clipboard size (bytes) to send
 	MaxHistory int `mapstructure:"max_history"` // limit number of clipboard history
 
-	// UI Config
-	HiddenText bool `mapstructure:"hidden_text"` // hidden clipboard text in UI
-
 	// Device Config
 	Username             string            `mapstructure:"-"`           // username of the device
 	ID                   p2pcrypto.PrivKey `mapstructure:"-"`           // id private key of this device

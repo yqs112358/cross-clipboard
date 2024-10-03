@@ -3,8 +3,8 @@ package clipboard
 import (
 	"time"
 
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/protobuf"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/protobuf"
 )
 
 // Clipboard struct for clipboard

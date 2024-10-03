@@ -7,8 +7,8 @@ import (
 	"unicode"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
 	"github.com/rivo/tview"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 func numberValidator(maxLen int) func(text string, lastChar rune) bool {

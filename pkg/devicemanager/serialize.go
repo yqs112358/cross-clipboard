@@ -6,9 +6,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
-	"github.com/ntsd/go-utils/pkg/stringutil"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/stringutil"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 const devicesFileName = "devices.json"

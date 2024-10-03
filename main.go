@@ -8,11 +8,11 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/crossclipboard"
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
-	"github.com/ntsd/cross-clipboard/ui"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/crossclipboard"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
+	"github.com/yqs112358/cross-clipboard/ui"
 )
 
 func main() {

@@ -7,11 +7,11 @@ import (
 
 	gopenpgp "github.com/ProtonMail/gopenpgp/v2/crypto"
 	p2pcrypto "github.com/libp2p/go-libp2p/core/crypto"
-	"github.com/ntsd/cross-clipboard/pkg/crypto"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
-	"github.com/ntsd/go-utils/pkg/maputil"
-	"github.com/ntsd/go-utils/pkg/stringutil"
 	"github.com/spf13/viper"
+	"github.com/yqs112358/cross-clipboard/pkg/crypto"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/maputil"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/stringutil"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 const configDirName = ".cross-clipboard"

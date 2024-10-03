@@ -3,8 +3,8 @@ package ui
 import (
 	"fmt"
 
-	"github.com/ntsd/cross-clipboard/pkg/device"
 	"github.com/rivo/tview"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
 )
 
 const (

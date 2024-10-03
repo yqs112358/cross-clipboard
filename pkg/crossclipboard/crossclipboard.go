@@ -10,14 +10,14 @@ import (
 	"github.com/libp2p/go-libp2p"
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/multiformats/go-multiaddr"
-	"github.com/ntsd/cross-clipboard/pkg/clipboard"
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/crypto"
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/devicemanager"
-	"github.com/ntsd/cross-clipboard/pkg/discovery"
-	"github.com/ntsd/cross-clipboard/pkg/stream"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
+	"github.com/yqs112358/cross-clipboard/pkg/clipboard"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/crypto"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/devicemanager"
+	"github.com/yqs112358/cross-clipboard/pkg/discovery"
+	"github.com/yqs112358/cross-clipboard/pkg/stream"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 // CrossClipboard cross clipbaord struct

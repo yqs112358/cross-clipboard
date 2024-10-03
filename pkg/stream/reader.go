@@ -6,9 +6,9 @@ import (
 	"io"
 
 	"github.com/libp2p/go-libp2p/core/network"
-	"github.com/ntsd/cross-clipboard/pkg/clipboard"
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
+	"github.com/yqs112358/cross-clipboard/pkg/clipboard"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 const limitDataSize = 1 << 20 // data size to avoid to read (100 MB)

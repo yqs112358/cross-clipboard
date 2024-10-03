@@ -7,11 +7,11 @@ import (
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
 	"github.com/multiformats/go-multiaddr"
-	"github.com/ntsd/cross-clipboard/pkg/clipboard"
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/crypto"
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/devicemanager"
+	"github.com/yqs112358/cross-clipboard/pkg/clipboard"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/crypto"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/devicemanager"
 )
 
 // StreamHandler struct for stream handler

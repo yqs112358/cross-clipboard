@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
 	"golang.design/x/clipboard"
 )
 

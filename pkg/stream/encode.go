@@ -1,9 +1,9 @@
 package stream
 
 import (
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/cross-clipboard/pkg/protobuf"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/protobuf"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 	"google.golang.org/protobuf/proto"
 )
 

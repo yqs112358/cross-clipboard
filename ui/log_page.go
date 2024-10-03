@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
 	"github.com/rivo/tview"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 func (v *View) newLogPage() *Page {

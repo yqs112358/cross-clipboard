@@ -1,4 +1,4 @@
-module github.com/ntsd/cross-clipboard
+module github.com/yqs112358/cross-clipboard
 
 go 1.18
 
@@ -7,7 +7,6 @@ require (
 	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
 	github.com/libp2p/go-libp2p v0.24.2
 	github.com/multiformats/go-multiaddr v0.8.0
-	github.com/ntsd/go-utils v0.0.0-20221002000426-fd4acd2afaa5
 	github.com/rivo/tview v0.0.0-20220307222120-9994674d60a8
 	github.com/spf13/viper v1.12.0
 	golang.design/x/clipboard v0.6.2

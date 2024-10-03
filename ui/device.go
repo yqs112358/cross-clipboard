@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/ntsd/cross-clipboard/pkg/device"
-	"github.com/ntsd/go-utils/pkg/stringutil"
 	"github.com/rivo/tview"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/stringutil"
 )
 
 var deviceStatusTextColorMap = map[device.DeviceStatus]tcell.Color{

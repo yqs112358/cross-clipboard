@@ -1,8 +1,8 @@
 package devicemanager
 
 import (
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/device"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/device"
 )
 
 type DeviceManager struct {

@@ -29,8 +29,8 @@
 package mobile
 
 import (
-	"github.com/ntsd/cross-clipboard/pkg/config"
-	"github.com/ntsd/cross-clipboard/pkg/crossclipboard"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
+	"github.com/yqs112358/cross-clipboard/pkg/crossclipboard"
 )
 
 type CrossClipbardMobile struct {

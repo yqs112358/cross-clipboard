@@ -4,8 +4,8 @@ import (
 	"strconv"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/ntsd/go-utils/pkg/stringutil"
 	"github.com/rivo/tview"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/stringutil"
 )
 
 func (v *View) newClipboardBox() tview.Primitive {

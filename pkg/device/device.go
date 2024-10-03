@@ -5,9 +5,9 @@ import (
 
 	"github.com/libp2p/go-libp2p/core/network"
 	"github.com/libp2p/go-libp2p/core/peer"
-	"github.com/ntsd/cross-clipboard/pkg/crypto"
-	"github.com/ntsd/cross-clipboard/pkg/protobuf"
-	"github.com/ntsd/cross-clipboard/pkg/xerror"
+	"github.com/yqs112358/cross-clipboard/pkg/crypto"
+	"github.com/yqs112358/cross-clipboard/pkg/protobuf"
+	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 // Device struct for peer

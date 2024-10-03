@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"fmt"
+	"github.com/yqs112358/cross-clipboard/pkg/config"
 
 	"github.com/libp2p/go-libp2p/core/host"
 	"github.com/libp2p/go-libp2p/core/peer"
@@ -24,17 +25,24 @@ func (n *DiscoveryNotifee) HandlePeerFound(peerInfo peer.AddrInfo) {
 	}
 }
 
-// InitMultiMDNS initialize the MDNS service
-func InitMultiMDNS(peerhost host.Host, rendezvous string, logchan chan string) (chan peer.AddrInfo, error) {
+type MulticastDNS struct {
+	cfg *config.Config
+}
+
+func NewMdnsDiscoverer(c *config.Config) *MulticastDNS {
+	return &MulticastDNS{cfg: c}
+}
+
+func (m *MulticastDNS) Init(peerHost host.Host, serviceName string, logChan chan string) (chan peer.AddrInfo, error) {
 	// register with service so that we get notified about peer discovery
 	n := &DiscoveryNotifee{
-		PeerHost: peerhost,
+		PeerHost: peerHost,
 		PeerChan: make(chan peer.AddrInfo),
-		LogChan:  logchan,
+		LogChan:  logChan,
 	}
 
 	// An hour might be a long long period in practical applications. But this is fine for us
-	ser := mdns.NewMdnsService(peerhost, rendezvous, n)
+	ser := mdns.NewMdnsService(peerHost, serviceName, n)
 	if err := ser.Start(); err != nil {
 		return nil, err
 	}

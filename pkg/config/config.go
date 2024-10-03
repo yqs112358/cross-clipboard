@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/yqs112358/cross-clipboard/pkg/utils/maputil"
 	"os"
 	"os/user"
 
@@ -9,19 +10,17 @@ import (
 	p2pcrypto "github.com/libp2p/go-libp2p/core/crypto"
 	"github.com/spf13/viper"
 	"github.com/yqs112358/cross-clipboard/pkg/crypto"
-	"github.com/yqs112358/cross-clipboard/pkg/utils/maputil"
 	"github.com/yqs112358/cross-clipboard/pkg/utils/stringutil"
 	"github.com/yqs112358/cross-clipboard/pkg/xerror"
 )
 
 const configDirName = ".cross-clipboard"
 
-// Config config struct for cross clipbaord
+// Config is the config struct for cross clipbaord
 type Config struct {
 	// Network Config
-	GroupName  string `mapstructure:"group_name"`
-	ListenHost string `mapstructure:"listen_host"`
-	ListenPort int    `mapstructure:"listen_port"`
+	GroupName string          `mapstructure:"group_name"`
+	Discovery DiscoveryConfig `mapstructure:"discovery"`
 
 	// Clipbaord Config
 	MaxSize    int `mapstructure:"max_size"`    // limit clipboard size (bytes) to send
@@ -38,41 +37,25 @@ type Config struct {
 	PGPPrivateKeyArmored string            `mapstructure:"private_key"` // armor pgp private key
 	AutoTrust            bool              `mapstructure:"auto_trust"`  // auto trust device
 
+	// Runtime-only Config
 	ConfigDirPath string // config directory path
 }
 
-// Save save config to file
-func (c *Config) Save() error {
-	// set viper value from struct
-	m, err := maputil.ToMapString(c, "mapstructure")
-	if err != nil {
-		return xerror.NewRuntimeError("can not convert config to map").Wrap(err)
-	}
-	for k, v := range m {
-		if k == "-" {
-			continue
-		}
-		viper.Set(k, v)
-	}
-
-	err = viper.WriteConfig()
-	if err != nil {
-		return xerror.NewRuntimeError(fmt.Sprintf(
-			"failed to write config at path %s",
-			viper.ConfigFileUsed(),
-		)).Wrap(err)
-	}
-	return nil
+// DiscoveryConfig is the config of Discoverers
+type DiscoveryConfig struct {
+	MDNS         MDNSConfig         `mapstructure:"mdns"`
+	UDPBroadcast UDPBroadcastConfig `mapstructure:"udp_broadcast"`
 }
 
-// Save save config to file
-func (c *Config) ResetToDefault() error {
-	err := os.RemoveAll(c.ConfigDirPath)
-	if err != nil {
-		return err
-	}
+type MDNSConfig struct {
+	ListenHost string `mapstructure:"listen_host"`
+	ListenPort int    `mapstructure:"listen_port"`
+}
 
-	return nil
+type UDPBroadcastConfig struct {
+	ListenHost string `mapstructure:"listen_host"`
+	ListenPort int    `mapstructure:"listen_port"`
+	Interval   int    `mapstructure:"discovery_interval"`
 }
 
 func LoadConfig(configDir string) (*Config, error) {
@@ -92,8 +75,11 @@ func LoadConfig(configDir string) (*Config, error) {
 	viper.AddConfigPath(configDir)
 
 	viper.SetDefault("group_name", "default")
-	viper.SetDefault("listen_host", "0.0.0.0")
-	viper.SetDefault("listen_port", 4001)
+	viper.SetDefault("discovery.mdns.listen_host", "0.0.0.0")
+	viper.SetDefault("discovery.mdns.listen_port", 4001)
+	viper.SetDefault("discovery.udp_broadcast.listen_host", "0.0.0.0")
+	viper.SetDefault("discovery.udp_broadcast.listen_port", 4002)
+	viper.SetDefault("discovery.udp_broadcast.discovery_interval", 2)
 
 	viper.SetDefault("max_size", 5<<20) // 5MB
 	viper.SetDefault("max_history", 10)
@@ -151,4 +137,38 @@ func LoadConfig(configDir string) (*Config, error) {
 	cfg.PGPPrivateKey = pgpPrivateKey
 
 	return cfg, nil
+}
+
+// Save config to file
+func (c *Config) Save() error {
+	// set viper value from struct
+	m, err := maputil.ToMapString(c, "mapstructure")
+	if err != nil {
+		return xerror.NewRuntimeError("can not convert config to map").Wrap(err)
+	}
+	for k, v := range m {
+		if k == "-" {
+			continue
+		}
+		viper.Set(k, v)
+	}
+
+	err = viper.WriteConfig()
+	if err != nil {
+		return xerror.NewRuntimeError(fmt.Sprintf(
+			"failed to write config at path %s",
+			viper.ConfigFileUsed(),
+		)).Wrap(err)
+	}
+	return nil
+}
+
+// Clean all configs
+func (c *Config) ResetToDefault() error {
+	err := os.RemoveAll(c.ConfigDirPath)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

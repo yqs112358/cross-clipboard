@@ -51,7 +51,8 @@ func NewCrossClipboard(cfg *config.Config) (*CrossClipboard, error) {
 	ctx := context.Background()
 
 	// 0.0.0.0 will listen on any interface device.
-	sourceMultiAddr, err := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%d", cc.Config.ListenHost, cc.Config.ListenPort))
+	// TODO: change bad logic
+	sourceMultiAddr, err := multiaddr.NewMultiaddr(fmt.Sprintf("/ip4/%s/tcp/%d", cc.Config.Discovery.MDNS.ListenHost, cc.Config.Discovery.MDNS.ListenHost))
 	if err != nil {
 		return nil, xerror.NewFatalError("error to multiaddr.NewMultiaddr").Wrap(err)
 	}
@@ -89,9 +90,10 @@ func NewCrossClipboard(cfg *config.Config) (*CrossClipboard, error) {
 
 		// This function is called when a peer initiates a connection and starts a stream with this peer.
 		cc.Host.SetStreamHandler(stream.PROTOCAL_ID, streamHandler.HandleStream)
-		cc.LogChan <- fmt.Sprintf("[*] your multiaddress is: /ip4/%s/tcp/%v/p2p/%s", cc.Config.ListenHost, cc.Config.ListenPort, host.ID().Loggable())
+		cc.LogChan <- fmt.Sprintf("[*] Your PeerID is: %s", host.ID().String())
 
-		peerInfoChan, err := discovery.InitMultiMDNS(cc.Host, cc.Config.GroupName, cc.LogChan)
+		mdnsDiscoverer := discovery.NewMdnsDiscoverer(cc.Config)
+		peerInfoChan, err := mdnsDiscoverer.Init(cc.Host, cc.Config.GroupName, cc.LogChan)
 		if err != nil {
 			cc.ErrorChan <- xerror.NewFatalError("error to discovery.InitMultiMDNS").Wrap(err)
 		}

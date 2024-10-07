@@ -33,19 +33,19 @@ func NewMdnsDiscoverer(c *config.Config) *MulticastDNS {
 	return &MulticastDNS{cfg: c}
 }
 
-func (m *MulticastDNS) Init(peerHost host.Host, serviceName string, logChan chan string) (chan peer.AddrInfo, error) {
+func (m *MulticastDNS) Init(peerHost host.Host, serviceName string, peerChan chan peer.AddrInfo, logChan chan string) error {
 	// register with service so that we get notified about peer discovery
 	n := &DiscoveryNotifee{
 		PeerHost: peerHost,
-		PeerChan: make(chan peer.AddrInfo),
+		PeerChan: peerChan,
 		LogChan:  logChan,
 	}
 
 	// An hour might be a long long period in practical applications. But this is fine for us
 	ser := mdns.NewMdnsService(peerHost, serviceName, n)
 	if err := ser.Start(); err != nil {
-		return nil, err
+		return err
 	}
 
-	return n.PeerChan, nil
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"github.com/libp2p/go-libp2p/core/peer"
 	"log"
 	"time"
 
@@ -29,6 +30,7 @@ type CrossClipboard struct {
 	DeviceManager    *devicemanager.DeviceManager
 
 	streamHandler *stream.StreamHandler
+	NewPeerChan   chan peer.AddrInfo
 
 	LogChan   chan string
 	ErrorChan chan error
@@ -40,6 +42,7 @@ type CrossClipboard struct {
 func NewCrossClipboard(cfg *config.Config) (*CrossClipboard, error) {
 	cc := &CrossClipboard{
 		Config:        cfg,
+		NewPeerChan:   make(chan peer.AddrInfo),
 		LogChan:       make(chan string),
 		ErrorChan:     make(chan error),
 		stopDiscovery: make(chan struct{}),
@@ -92,70 +95,76 @@ func NewCrossClipboard(cfg *config.Config) (*CrossClipboard, error) {
 		cc.Host.SetStreamHandler(stream.PROTOCAL_ID, streamHandler.HandleStream)
 		cc.LogChan <- fmt.Sprintf("[*] Your PeerID is: %s", host.ID().String())
 
-		mdnsDiscoverer := discovery.NewMdnsDiscoverer(cc.Config)
-		peerInfoChan, err := mdnsDiscoverer.Init(cc.Host, cc.Config.GroupName, cc.LogChan)
-		if err != nil {
-			cc.ErrorChan <- xerror.NewFatalError("error to discovery.InitMultiMDNS").Wrap(err)
-		}
-
-	discoveryLoop:
-		for {
-			select {
-			case peerInfo := <-peerInfoChan: // when discover a peer
-				dv := cc.DeviceManager.GetDevice(peerInfo.ID.String())
-				if dv != nil && dv.Status == device.StatusBlocked {
-					cc.ErrorChan <- xerror.NewRuntimeErrorf("device %s is blocked", peerInfo.ID.Loggable())
-					continue
-				}
-
-				cc.LogChan <- fmt.Sprintf("connecting to peer: %s", peerInfo.ID.Loggable())
-
-				retry := 1
-				for ; retry < 5; retry++ { // retry to connect
-					if err := cc.Host.Connect(ctx, peerInfo); err != nil {
-						cc.ErrorChan <- xerror.NewRuntimeErrorf(
-							"error to connect to peer %s, retrying %d",
-							peerInfo.ID.Loggable(),
-							retry,
-						).Wrap(err)
-						time.Sleep(time.Duration(retry*10) * time.Second)
-						continue
-					}
-					break
-				}
-				if retry == 5 {
-					cc.ErrorChan <- xerror.NewRuntimeErrorf("error to connect to peer %s", peerInfo.ID.Loggable())
-					continue
-				}
-
-				// open a stream, this stream will be handled by handleStream other end
-				stream, err := cc.Host.NewStream(ctx, peerInfo.ID, stream.PROTOCAL_ID)
-				if err != nil {
-					cc.ErrorChan <- xerror.NewRuntimeError("new stream error").Wrap(err)
-					continue
-				}
-
-				if dv == nil {
-					dv = device.NewDevice(peerInfo, stream)
-				} else {
-					dv.AddressInfo = peerInfo
-					dv.Stream = stream
-					dv.Reader = bufio.NewReader(stream)
-					dv.Writer = bufio.NewWriter(stream)
-				}
-
-				cc.DeviceManager.UpdateDevice(dv)
-				go streamHandler.CreateReadData(dv.Reader, dv)
-
-				cc.LogChan <- fmt.Sprintf("connected to peer host: %s", peerInfo)
-			case <-cc.stopDiscovery: // when stop discovery
-				cc.LogChan <- "stop discovery peer"
-				break discoveryLoop
-			}
-		}
+		cc.startDiscoverers()
+		cc.discoveryLoop(ctx)
 	}()
 
 	return cc, nil
+}
+
+func (cc *CrossClipboard) startDiscoverers() {
+	mdnsDiscoverer := discovery.NewMdnsDiscoverer(cc.Config)
+	err := mdnsDiscoverer.Init(cc.Host, cc.Config.GroupName, cc.NewPeerChan, cc.LogChan)
+	if err != nil {
+		cc.ErrorChan <- xerror.NewFatalError("error to discovery.InitMultiMDNS").Wrap(err)
+	}
+}
+
+func (cc *CrossClipboard) discoveryLoop(ctx context.Context) {
+	for {
+		select {
+		case peerInfo := <-cc.NewPeerChan: // when discover a peer
+			dv := cc.DeviceManager.GetDevice(peerInfo.ID.String())
+			if dv != nil && dv.Status == device.StatusBlocked {
+				cc.ErrorChan <- xerror.NewRuntimeErrorf("device %s is blocked", peerInfo.ID.Loggable())
+				continue
+			}
+
+			cc.LogChan <- fmt.Sprintf("connecting to peer: %s", peerInfo.ID.Loggable())
+
+			retry := 1
+			for ; retry < 5; retry++ { // retry to connect
+				if err := cc.Host.Connect(ctx, peerInfo); err != nil {
+					cc.ErrorChan <- xerror.NewRuntimeErrorf(
+						"error to connect to peer %s, retrying %d",
+						peerInfo.ID.Loggable(),
+						retry,
+					).Wrap(err)
+					time.Sleep(time.Duration(retry*10) * time.Second)
+					continue
+				}
+				break
+			}
+			if retry == 5 {
+				cc.ErrorChan <- xerror.NewRuntimeErrorf("error to connect to peer %s", peerInfo.ID.Loggable())
+				continue
+			}
+
+			// open a stream, this stream will be handled by handleStream other end
+			stream, err := cc.Host.NewStream(ctx, peerInfo.ID, stream.PROTOCAL_ID)
+			if err != nil {
+				cc.ErrorChan <- xerror.NewRuntimeError("new stream error").Wrap(err)
+				continue
+			}
+
+			if dv == nil {
+				dv = device.NewDevice(peerInfo, stream)
+			} else {
+				dv.AddressInfo = peerInfo
+				dv.Stream = stream
+				dv.Reader = bufio.NewReader(stream)
+				dv.Writer = bufio.NewWriter(stream)
+			}
+
+			cc.DeviceManager.UpdateDevice(dv)
+			go cc.streamHandler.CreateReadData(dv.Reader, dv)
+
+			cc.LogChan <- fmt.Sprintf("connected to peer host: %s", peerInfo)
+		case <-cc.stopDiscovery: // when stop discovery
+			cc.LogChan <- "stop discovery peer"
+			return
+		}
+	}
 }
 
 func (cc *CrossClipboard) Stop() error {
